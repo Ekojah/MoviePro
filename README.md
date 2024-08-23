@@ -26,6 +26,7 @@
     pip install flask
     pip install mysql.connector
     pip install oauth
+        please use your own API keys, putting them into '.env.example' (follow the instructions in that file)
     </pre>
     <h2>Specific Versions & Applications</h2>
     <pre>
