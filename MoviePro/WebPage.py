@@ -19,15 +19,23 @@ TMDB_API_KEY = {os.getenv("TMBDapi")}
 app.secret_key = 'abc'
 
 def get_movie_poster(movie_title):
-    search_url = f"https://api.themoviedb.org/3/search/movie?api_key={TMDB_API_KEY}&query={movie_title}"
-    response = requests.get(search_url)
-    data = response.json() #returned in json format
+    try:
+        search_url = f"https://api.themoviedb.org/3/search/movie?api_key={os.getenv("TMBDapi")}&query={movie_title}"
+        response = requests.get(search_url)
 
-    if data['results']:
-        poster_path = data['results'][0]['poster_path']
-        full_poster_url = f"https://image.tmdb.org/t/p/w500{poster_path}"
-        return full_poster_url
-    else:
+        response.raise_for_status()
+
+        data = response.json()
+
+        if 'results' in data and data['results']:
+            poster_path = data['results'][0].get('poster_path')
+            if poster_path:
+                full_poster_url = f"https://image.tmdb.org/t/p/w500{poster_path}"
+                return full_poster_url
+
+        return "https://via.placeholder.com/150"
+    except requests.exceptions.RequestException as e:
+        print(f"Error occurred: {e}")
         return "https://via.placeholder.com/150"
 
 
@@ -975,8 +983,8 @@ def newest_10_movies():
 oauth = OAuth(app)
 google = oauth.register(
     name='google',
-    client_id='529092675605-47ttf39td12vm1uvks9djjl3ddk39j0m.apps.googleusercontent.com',
-    client_secret= {os.getenv("OAUTHkey")},
+    client_id= os.getenv("GoogleID"),
+    client_secret= os.getenv("OAUTHkey"),
     server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
     client_kwargs={'scope': 'openid profile email'},
 )
